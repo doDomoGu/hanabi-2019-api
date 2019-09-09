@@ -1,22 +1,21 @@
-import * as Koa from 'koa';
+import * as Koa from "koa";
 import * as Router from "koa-router";
 
 const app = new Koa();
 
 app.use(async (ctx, next) => {
-  // Log the request to the console
-  console.log("Url: ", ctx.url);
+	// Log the request to the console
+	console.log("Url: ", ctx.url);
 
-  // Pass the request to the next middleware function
-  await next();
-})
-
+	// Pass the request to the next middleware function
+	await next();
+});
 
 const router = new Router();
 
-router.get('/*', async (ctx) => {
-  ctx.body = "Hi TS";
-})
+router.get("/*", async ctx => {
+	ctx.body = "Hi TS";
+});
 
 app.use(router.routes());
 
