@@ -20,7 +20,7 @@ module.exports = {
   // 缩进
   tabWidth: 2,
   // 使用空格缩进
-  useTabs: true,
+  useTabs: false,
   // 后置逗号，多行对象、数组在最后一行增加逗号
   trailingComma: 'es5',
   // parser: 'babylon',
