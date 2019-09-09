@@ -1,0 +1,28 @@
+{
+  "name": "hanabi-2019-api-express",
+  "version": "0.0.1",
+  "description": "hanabi-2019-api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doDomoGu/hanabi-2019-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/doDomoGu/hanabi-2019-api/issues"
+  },
+  "homepage": "https://github.com/doDomoGu/hanabi-2019-api#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.1",
+    "@types/node": "^12.7.4",
+    "typescript": "^3.5.3"
+  }
+}
