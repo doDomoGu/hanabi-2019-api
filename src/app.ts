@@ -1,12 +1,10 @@
 import express from "express"
+import routes from "./config/routes"
 
-import routes from "./routes"
+const app = express();
 
-
-
-var app = express();
-
-app.use('/v1',  routes);
+// 加载路由
+app.use('/',  routes);
 
 app.use( (req, res, next) => {
   res.status(404).send("404 NOT FOUND");

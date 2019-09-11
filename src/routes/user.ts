@@ -1,21 +1,45 @@
 import express from "express"
-import db from '../db'
+import User from "../models/user"
+import { Op } from "sequelize"
 
-var router = express.Router();
+const router = express.Router();
 
-router.get('/auth', function(req, res) {
-  if(typeof req.query.accessToken === 'string' && req.query.accessToken !== '') {
-    const accessToken = req.query.accessToken
-
-    db.query( 'SELECT * FROM User',(err, results , fields ) => {
-        console.log(err)
-        console.log(results)
-        console.log(fields)
-        
-    })
+router.get('/user/list', (req, res) => {
+  let params = {
+    name: '',
+    page: 1,
+    pageSize: 20
   }
 
-  res.send('[GET] this is test');
+  params = Object.assign(params,req.query);
+
+  const where = {
+    username !: {}
+  }
+  
+  if(params.name!=='') {
+    where.username = {
+      [Op.like]: '%'+params.name+'%'
+    }
+  }else{
+    delete where.username
+  }
+  
+  const offset = ( params.page - 1 ) * params.pageSize
+  const limit = params.pageSize
+
+
+  User.findAndCountAll({
+      where: where,
+      offset: offset,
+      limit: limit
+  })
+  .then(result => {
+    console.log(result.count);
+    console.log(result.rows);
+
+    res.json(result);
+  });
   
 });
 
