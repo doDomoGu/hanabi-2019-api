@@ -1,8 +1,8 @@
-import {Sequelize} from 'sequelize';
+import { Sequelize } from 'sequelize';
 
 const sequelize = new Sequelize('hanabi_yii_vue', 'gljgljglj', 'gljgogo', {
   host: 'localhost',
-  dialect: 'mysql'
+  dialect: 'mysql',
 });
 
 sequelize

@@ -1,6 +1,6 @@
-import express from "express"
-import User from "../models/user"
-import { Op } from "sequelize"
+import express from 'express';
+import { Op } from 'sequelize';
+import User from '../models/user';
 
 const router = express.Router();
 
@@ -8,42 +8,41 @@ router.get('/user/list', (req, res) => {
   let params = {
     name: '',
     page: 1,
-    pageSize: 20
-  }
+    pageSize: 20,
+  };
 
-  params = Object.assign(params,req.query);
+  params = Object.assign(params, req.query);
 
   const where = {
-    username !: {}
-  }
-  
-  if(params.name!=='') {
+    username !: {},
+  };
+
+  if (params.name !== '') {
     where.username = {
-      [Op.like]: '%'+params.name+'%'
-    }
-  }else{
-    delete where.username
+      [Op.like]: `%${params.name}%`,
+    };
+  } else {
+    delete where.username;
   }
-  
-  const offset = ( params.page - 1 ) * params.pageSize
-  const limit = params.pageSize
+
+  const offset = (params.page - 1) * params.pageSize;
+  const limit = params.pageSize;
 
 
   User.findAndCountAll({
-      where: where,
-      offset: offset,
-      limit: limit
+    where,
+    offset,
+    limit,
   })
-  .then(result => {
-    console.log(result.count);
-    console.log(result.rows);
+    .then((result) => {
+      console.log(result.count);
+      console.log(result.rows);
 
-    res.json(result);
-  });
-  
+      res.json(result);
+    });
 });
 
-router.post('/', function(req, res) {
+router.post('/', (req, res) => {
   res.send('[POST] this is test');
 });
 
