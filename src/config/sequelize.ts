@@ -3,9 +3,6 @@ import { Sequelize } from 'sequelize';
 const sequelize = new Sequelize('hanabi_yii_vue', 'gljgljglj', 'gljgogo', {
   host: 'localhost',
   dialect: 'mysql',
-  dialectOptions: {
-    useUTC: false,
-  },
   timezone: '+08:00',
 });
 
