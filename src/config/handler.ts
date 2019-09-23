@@ -1,6 +1,9 @@
 import express from 'express';
 
-export const successHandler = (res: express.Response, data: {}) => {
+export const successHandler = (
+  res: express.Response,
+  data: {},
+) => {
   res.status(200).json({
     code: 0,
     data,

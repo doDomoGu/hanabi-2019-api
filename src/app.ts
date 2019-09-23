@@ -12,8 +12,10 @@ createConnection().then((_) => {
   // 加载路由
   app.use('/', routes);
 
+  // 错误处理
   app.use(errorHandler);
 
+  // 404处理
   app.use(notFoundHandler);
 
   app.listen(3000, () => {
