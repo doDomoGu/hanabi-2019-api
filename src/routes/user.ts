@@ -14,7 +14,7 @@ router.post('/user', (req, res) => {
   const user = new User();
   user.username = 'player1';
   user.password = crypto.createHash('md5').update('1231223').digest('hex');
-  user.test = '222';
+  // user.test = '222';
 
   getRepository(User).save(user).then((u) => {
     console.log('#23333 User has been saved. User id is', u.id);
