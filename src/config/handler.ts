@@ -1,36 +1,37 @@
-import express from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 export const successHandler = (
-  res: express.Response,
-  data: {},
+  res: Response,
+  data?: {} | null,
+  msg?: string | null,
 ) => {
   res.status(200).json({
     code: 0,
     data,
-    msg: null,
+    msg,
   });
 };
 
 export const errorHandler = (
   err: Error,
-  req:express.Request,
-  res:express.Response,
-  next:express.NextFunction,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   console.log('error handler');
   // #TODO 记录错误日志
   // console.log(err);
   res.status(500).json({
-    code: 1000,
+    code: 1000, // todo errcode
     data: null,
     msg: err.message,
   });
 };
 
 export const notFoundHandler = (
-  req:express.Request,
-  res:express.Response,
-  next:express.NextFunction,
+  req: Request,
+  res: Response,
+  next: NextFunction,
 ) => {
   console.log('404 not found handler');
   res.status(404).json({
