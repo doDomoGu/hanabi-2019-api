@@ -8,6 +8,7 @@ import auth from '../controller/auth';
 const router = express.Router();
 
 router.post('/login', auth.login);
+router.delete('/logout', auth.logout);
 
 router.get('/user/list', user.list);
 // router.post('/user/add', user.add);
