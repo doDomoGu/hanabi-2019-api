@@ -1,7 +1,21 @@
-import user from '../routes/user';
-import auth from '../routes/auth';
+import express from 'express';
 
-export default [
-  user,
-  auth,
-];
+import user from '../controller/user';
+import auth from '../controller/auth';
+// import auth from '../routes/auth';
+// import auth from '../routes/auth';
+
+const router = express.Router();
+
+router.post('/login', auth.login);
+
+router.get('/user/list', user.list);
+// router.post('/user/add', user.add);
+
+export default router;
+
+// export default [
+//   router,
+//   user,
+//   auth,
+// ];
