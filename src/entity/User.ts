@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export default class User {
@@ -27,6 +27,7 @@ export default class User {
 
   @Column({
     length: 20,
+    nullable: true,
   })
   mobile?: string
 
@@ -65,15 +66,25 @@ export default class User {
   })
   status?: string
 
-  @Column({
+  @CreateDateColumn({
     name: 'created_at',
-    type: 'datetime',
   })
   createdAt?: Date
 
-  @Column({
+  @UpdateDateColumn({
     name: 'updated_at',
-    type: 'datetime',
   })
   updatedAt?: Date
+
+  // @Column({
+  //   name: 'created_at',
+  //   type: 'datetime',
+  // })
+  // createdAt?: Date
+
+  // @Column({
+  //   name: 'updated_at',
+  //   type: 'datetime',
+  // })
+  // updatedAt?: Date
 }
