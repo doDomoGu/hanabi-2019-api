@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export default class Room {
@@ -18,9 +23,8 @@ export default class Room {
   })
   password!: string
 
-  @Column({
+  @UpdateDateColumn({
     name: 'updated_at',
-    type: 'datetime',
   })
   updatedAt?: Date
 }
