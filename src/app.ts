@@ -3,11 +3,14 @@ import { createConnection } from 'typeorm';
 import bodyParser from 'body-parser'; // 解析,用req.body获取post参数
 import routes from './config/routes';
 import { errorHandler, notFoundHandler } from './config/handler';
+import authController from './controller/auth';
 
 createConnection().then((_) => {
   const app = express();
 
   app.use(bodyParser.urlencoded({ extended: false }));
+  // token验证处理
+  app.use(authController.tokenHandler);
 
   // 加载路由
   app.use('/', routes);

@@ -8,9 +8,40 @@ import moment from 'moment';
 import User from '../entity/User';
 import UserAuth from '../entity/UserAuth';
 import { successHandler, errorHandler } from '../config/handler';
-
+import State from '../config/state';
 
 export default {
+  // 处理请求 验证token, 并设置State.userId
+  tokenHandler: async (req: Request, res: Response, next: NextFunction) => {
+    // TODO req.path 不用token的地址
+    if (req.path === '/login') {
+      next();
+    } else {
+      try {
+        const { 'x-token': token } = req.headers;
+        if (typeof token !== 'string') {
+          throw new Error('提交秘钥错误');
+        }
+
+        const userAuth = await getRepository(UserAuth).findOne({ where: { token } });
+
+        if (typeof userAuth === 'undefined') {
+          throw new Error('秘钥不存在');
+        }
+
+        if (!moment().isBefore(userAuth.expiredTime)) {
+          throw new Error('秘钥已过期');
+        }
+
+        State.userId = userAuth.userId;
+        next();
+      } catch (err) {
+        console.log('token auth wrong');
+        errorHandler(err, req, res, next);
+      }
+    }
+  },
+
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { username, password } = req.body;
@@ -67,49 +98,23 @@ export default {
         await createQueryBuilder()
           .update(UserAuth)
           .set({ expiredTime })
-          .where('user_id = :user_id', { user_id: 1 })
+          .where('user_id = :user_id', { user_id: State.userId })
           .andWhere('expired_time > :now', { now: moment().format('YYYY-MM-D HH:mm:ss') })
           .execute();
       } else {
         // 非同步退出 只删除使用的Token
+        const { 'x-token': token } = req.headers;
+
+        await createQueryBuilder()
+          .update(UserAuth)
+          .set({ expiredTime })
+          .where('token = :token', { token })
+          .execute();
       }
-
-
-      // $isSync = (int) Yii::$app->request->get('sync_exit') > 0;
-
-      //   $expired = date('Y-m-d H:i:s',strtotime('-1 second')); //生成一个过期时间，比当前时间小
-
-      //   if($isSync) {
-      //       #同步退出 user_auth表里所有user_id=当前登录用户的Token都置为过期
-      //       UserAuth::updateAll(
-      //           ['expired_time'=>$expired],
-      //           [
-      //               'and',
-      //               ['user_id'=>Yii::$app->user->id],
-      //               ['>','expired_time',date('Y-m-d H:i:s')]
-      //           ]
-      //       );
-
-      //   } else {
-      //       #非同步退出 只删除使用的Token
-      //       $token = Yii::$app->request->headers->get('X-Token');
-
-      //       $auth = UserAuth::find()->where(['token'=>$token])->one();
-
-      //       if(!$auth){
-
-      //           throw new \Exception('Token数据错误(退出登录时)',1000);
-
-      //       }
-
-      //       $auth->expired_time = $expired;
-
-      //       $auth->save();
-
-      //   }
 
       successHandler(res);
     } catch (err) {
+      console.log(err);
       errorHandler(err, req, res, next);
     }
   },
