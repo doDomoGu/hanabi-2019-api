@@ -14,7 +14,7 @@ export default {
   // 处理请求 验证token, 并设置State.userId
   tokenHandler: async (req: Request, res: Response, next: NextFunction) => {
     // TODO req.path 不用token的地址
-    if (req.path === '/login') {
+    if (['/login', '/auth'].indexOf(req.path) > -1) {
       next();
     } else {
       try {
@@ -41,7 +41,7 @@ export default {
       }
     }
   },
-
+  //  (无需验证header.x-token) 登录操作
   login: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { username, password } = req.body;
@@ -53,7 +53,7 @@ export default {
       const user = await getRepository(User).findOne({ where: { username } });
 
       if (typeof user === 'undefined') {
-        throw new Error('用户名错误');
+        throw new Error('找不到用户');
       }
 
       if (user.password !== crypto.createHash('md5').update(password).digest('hex')) {
@@ -115,6 +115,41 @@ export default {
       successHandler(res);
     } catch (err) {
       console.log(err);
+      errorHandler(err, req, res, next);
+    }
+  },
+  // (无需验证header.x-token) 通过token获取用户信息 （用于刷新页面自动登录）
+  checkToken: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { accessToken: token } = req.query;
+      if (typeof token !== 'string') {
+        throw new Error('提交秘钥错误001');
+      }
+
+      const userAuth = await getRepository(UserAuth).findOne({ where: { token } });
+
+      if (typeof userAuth === 'undefined') {
+        throw new Error('秘钥不存在');
+      }
+
+      if (!moment().isBefore(userAuth.expiredTime)) {
+        throw new Error('秘钥已过期');
+      }
+
+      const user = await getRepository(User).findOne({ where: { userId: userAuth.userId } });
+
+      if (typeof user === 'undefined') {
+        throw new Error('找不到用户');
+      }
+
+      successHandler(res, {
+        token,
+        tokenForceUpdate: true,
+        userId: user.id,
+        userInfo: user,
+      });
+    } catch (err) {
+      // console.log('token auth wrong');
       errorHandler(err, req, res, next);
     }
   },
