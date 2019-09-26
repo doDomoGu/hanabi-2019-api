@@ -1,24 +1,37 @@
 import express from 'express';
 
-import user from '../controller/user';
+// import user from '../controller/user';
 import auth from '../controller/auth';
 import room from '../controller/room';
+import myRoom from '../controller/myRoom';
 
 const router = express.Router();
 
+/* 玩家登录 */
 router.post('/login', auth.login);
+
+/* 玩家登出 */
 router.delete('/logout', auth.logout);
+
+/* 检查token, 获取玩家信息 （用于使用前端储存的token,实现自动登录,) */
 router.get('/auth', auth.checkToken);
 
+/* 房间列表 */
 router.get('/room/list', room.list);
 
-router.get('/user/list', user.list);
+/* 进入房间 */
+router.post('/my-room/enter', myRoom.enter);
+
+/* 退出房间 */
+router.post('/my-room/exit', myRoom.enter);
+
+/* 所在房间信息 */
+router.get('/my-room/info', myRoom.info);
+
+/* 客机玩家准备操作 */
+router.post('/my-room/do-ready', myRoom.doReady);
+
+// router.get('/user/list', user.list);
 // router.post('/user/add', user.add);
 
 export default router;
-
-// export default [
-//   router,
-//   user,
-//   auth,
-// ];
