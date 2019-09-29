@@ -2,7 +2,7 @@ import {
   Entity, Column, PrimaryColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('user_auth')
 export default class UserAuth {
   @Column({
     name: 'user_id',

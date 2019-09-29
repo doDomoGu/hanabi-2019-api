@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('user')
 export default class User {
   @PrimaryGeneratedColumn({
     unsigned: true,

@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('room')
 export default class Room {
   @PrimaryColumn({
     unsigned: true,

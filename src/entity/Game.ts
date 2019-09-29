@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('game')
 export default class Game {
   @PrimaryColumn({
     name: 'room_id',
