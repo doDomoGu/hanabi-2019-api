@@ -70,7 +70,7 @@ export default {
       const userAuth = new UserAuth();
       userAuth.userId = userId;
       userAuth.token = token;
-      userAuth.expiredTime = moment().add(1, 'day').toDate(); // .format('YYYY-MM-D HH:mm:ss');
+      userAuth.expiredTime = moment().add(1, 'day').toDate(); // .format('YYYY-MM-DD HH:mm:ss');
       userAuth.createdAt = moment().toDate();
 
       if (await getRepository(UserAuth).save(userAuth)) {
@@ -99,7 +99,7 @@ export default {
           .update(UserAuth)
           .set({ expiredTime })
           .where('user_id = :user_id', { user_id: State.userId })
-          .andWhere('expired_time > :now', { now: moment().format('YYYY-MM-D HH:mm:ss') })
+          .andWhere('expired_time > :now', { now: moment().format('YYYY-MM-DD HH:mm:ss') })
           .execute();
       } else {
         // 非同步退出 只删除使用的Token
