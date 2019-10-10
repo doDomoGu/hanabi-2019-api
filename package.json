@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start2": "tsc && node --inspect build/app.js",
     "start": "ts-node --inspect src/app.ts",
-    "watch": "nodemon --watch 'src/**/*' -e ts --exec 'npm run start'",
+    "start3": "node --inspect -r ts-node/register src/app.ts",
+    "watch": "nodemon --watch 'src/**/*' -e ts --exec 'npm run start3'",
     "lint": "eslint 'src/**/*.{js,ts,tsx}'",
     "format": "eslint --fix 'src/**/*.{js,ts,tsx}'"
   },
