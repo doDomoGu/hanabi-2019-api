@@ -33,7 +33,7 @@ export default {
           throw new Error('秘钥已过期');
         }
 
-        State.userId = userAuth.userId;
+        State.userId = userAuth.userId.toString();
         next();
       } catch (err) {
         console.log('token auth wrong');

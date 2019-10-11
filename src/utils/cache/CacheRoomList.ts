@@ -1,42 +1,43 @@
 import flatCache from 'flat-cache';
 import moment from 'moment';
-import state from '../../config/state';
 
 const cacheId = 'cacheId';
 const sysLastUpdateKey = 'room_list_last_updated';
 const userLastUpdateKeyPrefix = 'room_list_last_updated_';
 
-/* 检查是否需要给当前玩家重新读取列表数据 */
-export const isNoUpdate = () => {
-  const cache = flatCache.load(cacheId);
-  // userLastUpdated: 当前玩家对应的房间列表的最后缓存更新时间
-  const userLastUpdated = cache.getKey(userLastUpdateKeyPrefix + state.userId);
+const cache = flatCache.load(cacheId);
 
-  // 当前玩家的最后缓存更新时间 不存在 需要更新数据
+/* 检查是否当前玩家列表数据缓存是否有效 */
+export const isEnabled = (userId:string) => {
+  // userLastUpdated: 当前玩家对应的房间列表的最后缓存更新时间 (以下简称"玩家时间")
+  const userLastUpdated = cache.getKey(userLastUpdateKeyPrefix + userId);
+
+  // 玩家时间不存在 表示失效
   if (typeof userLastUpdated !== 'string' || userLastUpdated === '') {
     return false;
   }
 
-  // 系统的房间列表的最后缓存更新时间
+  // sysLastUpdated: 系统的房间列表的最后缓存更新时间 (以下简称"系统时间")
   const sysLastUpdated = cache.getKey(sysLastUpdateKey);
 
+  // 系统时间不存在 表示有效
   if (typeof sysLastUpdated !== 'string' || sysLastUpdated === '') {
     return true;
   }
 
-  // 当前玩家的最后缓存更新时间 小于 系统的最后缓存更新时间 需要更新数据
+  // 玩家时间 大于 系统时间 表示有效
   return moment(userLastUpdated).isAfter(moment(sysLastUpdated));
 };
 
-export const updateUserKey = () => {
-  const cache = flatCache.load(cacheId);
+/* 更新 当前玩家对应的房间列表的最后缓存更新时间 */
+export const updateUserKey = (userId:string) => {
   const now = moment().format('YYYY-MM-DD HH:mm:ss');
-  cache.setKey(userLastUpdateKeyPrefix + state.userId, now);
+  cache.setKey(userLastUpdateKeyPrefix + userId, now);
   cache.save(true);
 };
 
+/* 更新 系统的房间列表的最后缓存更新时间 */
 export const updateSysKey = () => {
-  const cache = flatCache.load(cacheId);
   const now = moment().format('YYYY-MM-DD HH:mm:ss');
   cache.setKey(sysLastUpdateKey, now);
   cache.save(true);
