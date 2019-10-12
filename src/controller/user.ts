@@ -4,7 +4,7 @@ import { getRepository } from 'typeorm';
 import crypto from 'crypto';
 
 import User from '../entity/User';
-import { successHandler, errorHandler } from '../config/handler';
+import { successHandler, errorHandler } from '../utils/handler';
 
 
 export default {

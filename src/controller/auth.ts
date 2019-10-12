@@ -7,7 +7,7 @@ import moment from 'moment';
 
 import User from '../entity/User';
 import UserAuth from '../entity/UserAuth';
-import { successHandler, errorHandler } from '../config/handler';
+import { successHandler, errorHandler } from '../utils/handler';
 import State from '../config/state';
 
 export default {

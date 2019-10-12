@@ -3,7 +3,7 @@ import { getRepository } from 'typeorm';
 
 import Room from '../entity/Room';
 import RoomPlayer from '../entity/RoomPlayer';
-import { successHandler, errorHandler } from '../config/handler';
+import { successHandler, errorHandler } from '../utils/handler';
 import Cache from '../utils/cache';
 import State from '../config/state';
 
