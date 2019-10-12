@@ -4,7 +4,9 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
   Index,
+  OneToOne,
 } from 'typeorm';
+import Room from './Room';
 
 @Entity('room_player')
 @Index('user_room', ['userId', 'roomId'], { unique: true })
@@ -28,7 +30,7 @@ export default class RoomPlayer {
     unsigned: true,
     default: 0,
   })
-  isHost?: number
+  isHost!: number
 
   @Column({
     name: 'is_ready',
@@ -43,4 +45,7 @@ export default class RoomPlayer {
     name: 'updated_at',
   })
   updatedAt?: Date
+
+  @OneToOne((type) => Room)
+  room?: Room;
 }

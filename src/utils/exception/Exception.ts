@@ -6,7 +6,7 @@ export default class Exception {
   t = (item: string) => {
     let errContent;
     let errCode;
-    if (this.exception.has(item) !== undefined) {
+    if (this.exception.has(item)) {
       errContent = this.exception.get(item).msg;
       errCode = this.exception.get(item).code;
     } else {

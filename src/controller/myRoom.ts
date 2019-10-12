@@ -5,8 +5,9 @@ import Room from '../entity/Room';
 import { successHandler, errorHandler } from '../utils/handler';
 import RoomRepository from '../repository/RoomRepository';
 import State from '../config/state';
-import MyError from '../utils/exception/MyError';
-
+import ExceptionMyRoom from '../utils/exception/ExceptionMyRoom';
+import RoomPlayer from '../entity/RoomPlayer';
+import Cache from '../utils/cache'
 
 export default {
   enter: async (req: Request, res: Response, next: NextFunction) => {
@@ -14,52 +15,53 @@ export default {
       const roomRepository = getCustomRepository(RoomRepository);
       const { isInRoom } = await roomRepository.isIn(State.userId);
 
-      console.log(isInRoom);
-      // 检查是否不在房间内
-      // list($isInRoom) = MyRoom::isIn();
-      // if($isInRoom){
-      //     MyRoomException::t('do_enter_already_in_room');
-      // }
+      // 检查是否在房间内
+      if (isInRoom) {
+        ExceptionMyRoom.t('do_enter_already_in_room');
+      }
 
-      // $roomId = (int) Yii::$app->request->post('roomId');
+      // 获取请求参数 roomId
+      const { roomId } = req.body;
 
-      // $room = Room::getOne($roomId);
+      const room = <Room> await getRepository(Room).findOne(roomId);
 
-      // if ($room->password != '') {
-      //     //TODO 房间密码处理
-      //     MyRoomException::t('do_enter_locked_room_by_wrong_password');
-      // }
+      if (room.password !== '') {
+        // TODO 房间密码处理
+        ExceptionMyRoom.t('do_enter_locked_room_by_wrong_password');
+      }
 
-      // $hostPlayer = $room->hostPlayer;
-      // $guestPlayer = $room->guestPlayer;
+      const hostPlayer = await room.getHostPlayer();
+      const guestPlayer = await room.getGuestPlayer();
 
-      // # 房间已满
-      // if($hostPlayer && $guestPlayer) {
-      //     MyRoomException::t('do_enter_full_room');
-      // }
+      // 房间已满
+      if (typeof hostPlayer !== 'undefined' && typeof guestPlayer !== 'undefined') {
+        ExceptionMyRoom.t('do_enter_full_room');
+      }
 
-      // if (!$hostPlayer) {
-      //     # 成为主机玩家
-      //     $newRoomPlayer = new RoomPlayer();
-      //     $newRoomPlayer->room_id = $roomId;
-      //     $newRoomPlayer->user_id = Yii::$app->user->id;
-      //     $newRoomPlayer->is_host = 1;
-      //     $newRoomPlayer->is_ready = 0;
-      //     $newRoomPlayer->save();
-      // }else {
-      //     # 成为客机玩家
-      //     $newRoomPlayer = new RoomPlayer();
-      //     $newRoomPlayer->room_id = $roomId;
-      //     $newRoomPlayer->user_id = Yii::$app->user->id;
-      //     $newRoomPlayer->is_host = 0;
-      //     $newRoomPlayer->is_ready = 0;
-      //     $newRoomPlayer->save();
+      if (typeof hostPlayer === 'undefined') {
+        // 成为主机玩家
+        const newRoomPlayer = new RoomPlayer();
+        newRoomPlayer.roomId = roomId;
+        newRoomPlayer.userId = Number(State.userId);
+        newRoomPlayer.isHost = 1;
+        newRoomPlayer.isReady = 0;
+        await getRepository(RoomPlayer).save(newRoomPlayer);
+      } else {
+        // 成为客机玩家
+        const newRoomPlayer = new RoomPlayer();
+        newRoomPlayer.roomId = roomId;
+        newRoomPlayer.userId = Number(State.userId);
+        newRoomPlayer.isHost = 0;
+        newRoomPlayer.isReady = 0;
+        await getRepository(RoomPlayer).save(newRoomPlayer);
 
-      //     # 清空房主的房间信息缓存
-      //     MyRoomCache::clear($hostPlayer->user_id);
-      // }
+        // 清空房主的房间信息缓存
+        Cache.myRoom.clear(hostPlayer.userId.toString());
+      }
 
-      // RoomListCache::updateSysKey();
+      Cache.roomList.updateUserKey(State.userId);
+
+      successHandler(res);
     } catch (err) {
       errorHandler(err, req, res, next);
     }

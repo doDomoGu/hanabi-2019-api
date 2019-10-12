@@ -1,6 +1,6 @@
 import Exception from './Exception';
 
-export default class ExceptionMyRoom extends Exception {
+class ExceptionMyRoom extends Exception {
   exception = new Map(
     [
       [
@@ -13,3 +13,5 @@ export default class ExceptionMyRoom extends Exception {
     ],
   )
 }
+
+export default new ExceptionMyRoom();

@@ -1,12 +1,15 @@
 import {
   Entity,
+  BaseEntity,
   Column,
   PrimaryColumn,
   UpdateDateColumn,
+  getRepository,
 } from 'typeorm';
+import RoomPlayer from './RoomPlayer';
 
 @Entity('room')
-export default class Room {
+export default class Room extends BaseEntity  {
   @PrimaryColumn({
     unsigned: true,
   })
@@ -27,4 +30,12 @@ export default class Room {
     name: 'updated_at',
   })
   updatedAt?: Date
+
+  getHostPlayer = async () => getRepository(RoomPlayer).findOne({
+    where: [{ roomId: this.id, isHost: 1 }],
+  });
+
+  getGuestPlayer = async () => getRepository(RoomPlayer).findOne({
+    where: [{ roomId: this.id, isHost: 0 }],
+  });
 }
