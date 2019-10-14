@@ -26,7 +26,7 @@ router.get('/room/list', room.list);
 router.post('/my-room/enter', myRoom.enter);
 
 // 退出
-router.post('/my-room/exit', myRoom.enter);
+router.post('/my-room/exit', myRoom.exit);
 
 // 获取所在房间信息
 router.get('/my-room/info', myRoom.info);

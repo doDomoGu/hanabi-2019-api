@@ -9,7 +9,6 @@ import {
 import Room from './Room';
 
 @Entity('room_player')
-@Index('user_room', ['userId', 'roomId'], { unique: true })
 export default class RoomPlayer {
   @PrimaryColumn({
     name: 'user_id',
@@ -17,7 +16,7 @@ export default class RoomPlayer {
   })
   userId!: number
 
-  @Column({
+  @PrimaryColumn({
     name: 'room_id',
     unsigned: true,
   })

@@ -9,7 +9,7 @@ import {
 import RoomPlayer from './RoomPlayer';
 
 @Entity('room')
-export default class Room extends BaseEntity  {
+export default class Room extends BaseEntity {
   @PrimaryColumn({
     unsigned: true,
   })

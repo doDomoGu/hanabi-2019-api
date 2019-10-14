@@ -8,7 +8,7 @@ const userLastUpdateKeyPrefix = 'room_list_last_updated_';
 const cache = flatCache.load(cacheId);
 
 /* 检查是否当前玩家列表数据缓存是否有效 */
-export const isEnabled = (userId:string) => {
+export const isEnabled = (userId: number) => {
   // userLastUpdated: 当前玩家对应的房间列表的最后缓存更新时间 (以下简称"玩家时间")
   const userLastUpdated = cache.getKey(userLastUpdateKeyPrefix + userId);
 
@@ -30,7 +30,7 @@ export const isEnabled = (userId:string) => {
 };
 
 /* 更新 当前玩家对应的房间列表的最后缓存更新时间 */
-export const updateUserKey = (userId:string) => {
+export const updateUserKey = (userId: number) => {
   const now = moment().format('YYYY-MM-DD HH:mm:ss');
   cache.setKey(userLastUpdateKeyPrefix + userId, now);
   cache.save(true);

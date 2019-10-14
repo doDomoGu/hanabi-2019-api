@@ -5,7 +5,7 @@ import ExceptionMyRoom from '../utils/exception/ExceptionMyRoom';
 
 @EntityRepository(Room)
 export default class RoomRepository extends Repository<Room> {
-  isIn = async (userId: string) => {
+  isIn = async (userId: number) => {
     let isInRoom = false;
     let roomId = -1;
     // inRoomCount: 所在房间数量

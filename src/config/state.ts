@@ -1,3 +1,3 @@
 export default {
-  userId: '',
+  userId: 0,
 };
