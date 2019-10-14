@@ -3,10 +3,7 @@ import {
   Column,
   PrimaryColumn,
   UpdateDateColumn,
-  Index,
-  OneToOne,
 } from 'typeorm';
-import Room from './Room';
 
 @Entity('room_player')
 export default class RoomPlayer {
@@ -44,7 +41,4 @@ export default class RoomPlayer {
     name: 'updated_at',
   })
   updatedAt?: Date
-
-  @OneToOne((type) => Room)
-  room?: Room;
 }

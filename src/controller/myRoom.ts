@@ -13,8 +13,7 @@ export default {
   enter: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = State;
-      const roomRepository = getCustomRepository(RoomRepository);
-      const { isInRoom } = await roomRepository.isIn(userId);
+      const { isInRoom } = await getCustomRepository(RoomRepository).isIn(userId);
 
       // 检查是否在房间内
       if (isInRoom) {
@@ -71,8 +70,7 @@ export default {
   exit: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = State;
-      const roomRepository = getCustomRepository(RoomRepository);
-      const { isInRoom, roomId } = await roomRepository.isIn(userId);
+      const { isInRoom, roomId } = await getCustomRepository(RoomRepository).isIn(userId);
 
       // 检查是否在房间内
       if (!isInRoom) {
@@ -122,11 +120,73 @@ export default {
     }
   },
 
-  info: async (req: Request, res: Response) => {
-    //
+  info: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { userId } = State;
+
+      // 参数 forceUpdate: 值为1时，需要强制获取数据
+      const { force: forceUpdate } = req.query;
+
+      // forceUpdate不为1时 不强制获取数据
+      if (typeof forceUpdate === 'undefined' || forceUpdate !== '1') {
+        // 缓存有效时 不强制获取数据
+        if (Cache.myRoom.isEnabled(userId)) {
+          // 返回 noUpdate
+          return successHandler(res, { noUpdate: true });
+        }
+      }
+
+      const { isInRoom, roomId } = await getCustomRepository(RoomRepository).isIn(userId);
+
+      type playerInfo = {
+        id: number,
+        name: string,
+      }
+
+      type dataType = {
+        roomId: number,
+        hostPlayer?: playerInfo,
+        guestPlayer?: playerInfo,
+        isHost?: boolean,
+        isReady?: boolean,
+      }
+
+      const data: dataType = {
+        roomId,
+      };
+
+      if (isInRoom === true) {
+        const room = <Room> await getRepository(Room).findOne(roomId);
+
+        const hostPlayer = await room.getHostPlayer();
+        if (hostPlayer instanceof RoomPlayer) {
+          data.hostPlayer = {
+            id: hostPlayer.userId,
+            name: 'host',
+          };
+          data.isHost = hostPlayer.userId === userId;
+        }
+
+        const guestPlayer = await room.getGuestPlayer();
+        if (guestPlayer instanceof RoomPlayer) {
+          data.guestPlayer = {
+            id: guestPlayer.userId,
+            name: 'guest',
+          };
+          data.isReady = guestPlayer.isReady === 1;
+        }
+      }
+
+      // 设置当前玩家房间信息缓存为true
+      Cache.myRoom.set(userId);
+
+      successHandler(res, data);
+    } catch (err) {
+      errorHandler(err, req, res, next);
+    }
   },
 
-  doReady: async (req: Request, res: Response) => {
+  doReady: async (req: Request, res: Response, next: NextFunction) => {
     //
   },
 };
