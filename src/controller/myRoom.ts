@@ -187,6 +187,38 @@ export default {
   },
 
   doReady: async (req: Request, res: Response, next: NextFunction) => {
-    //
+    try {
+      const { userId } = State;
+      const { isInRoom, roomId } = await getCustomRepository(RoomRepository).isIn(userId);
+
+      // 检查是否在房间内
+      if (!isInRoom) {
+        ExceptionMyRoom.t('do_ready_but_not_in_room');
+      }
+
+      // 获取room对象
+      const room = <Room> await getRepository(Room).findOne(roomId);
+      const hostPlayer = <RoomPlayer> await room.getHostPlayer();
+      const guestPlayer = <RoomPlayer> await room.getGuestPlayer();
+
+      // 判断你是否是客机玩家
+      if (!(hostPlayer instanceof RoomPlayer)
+        || !(guestPlayer instanceof RoomPlayer)
+        || guestPlayer.userId !== userId) {
+        ExceptionMyRoom.t('do_ready_not_guest_player');
+      }
+
+      guestPlayer.isReady = guestPlayer.isReady === 1 ? 0 : 1;
+      if (await getRepository(RoomPlayer).save(guestPlayer)) {
+        // 清空房间内玩家的信息缓存
+        Cache.myRoom.clear(hostPlayer.userId);
+        Cache.myRoom.clear(guestPlayer.userId);
+      } else {
+        ExceptionMyRoom.t('do_ready_failure');
+      }
+      successHandler(res);
+    } catch (err) {
+      errorHandler(err, req, res, next);
+    }
   },
 };
